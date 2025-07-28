@@ -67,13 +67,13 @@ def main():
         # s3 = s3_connection.s3_operations("bucket-name", "accesskey", "secretkey")
         # df = s3.fetch_file_from_s3("data.csv")
 
-        data_path = './MLOPS-SCHITTVISION/data/raw/schitts_creek_dialogues_raw.csv'
+        data_path = '/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/schitts_creek_combined_dialogues.csv'
         df = load_data(data_path)
         
-        processed_df = preprocess_data(df)
+        # processed_df = preprocess_data(df)
         
-        train_data, test_data = train_test_split(processed_df, test_size=test_size, random_state=42)
-        save_data(train_data, test_data, data_path='./data')
+        # train_data, test_data = train_test_split(processed_df, test_size=test_size, random_state=42)
+        # save_data(train_data, test_data, data_path='./data')
     except Exception as e:
         logging.error(f'Failed to complete the data ingestion process: {e}')
         print(f"Error: {e}")

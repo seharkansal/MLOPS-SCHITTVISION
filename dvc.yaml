@@ -1,19 +1,21 @@
 stages:
   data_ingestion:
-    cmd: python src/data/data_injestion.py
+    cmd: python3 -m src.data.data_injestion
     deps:
-    - src/data/data_ingestion.py
+    - src/data/data_injestion.py
     # params:
     # - data_ingestion.test_size
     outs:
-    - data/raw
+    - data/external
   data_preprocessing:
-    cmd: python src/data/data_preprocessing.py
+    cmd: python3 -m src.data.data_preprocessing
     deps:
-    - data/raw
+    - data/external
     - src/data/data_collection.py
     outs:
     - data/interim
+
+  input_target_pairs:
 
     cmd: python src/data/input_target_pairs.py
     deps:
@@ -30,16 +32,17 @@ stages:
     # params:
     # - feature_engineering.max_features
     outs:
-    - data/processed
+    - data/special_tokens
 
+  tokenization:
     cmd: python src/features/tokenization.py
     deps:
-    - data/processed
+    - data/special_tokens
     - src/features/add_special_tokens.py
     # params:
     # - feature_engineering.max_features
     outs:
-    - data/processed
+    - data/tokenized
 
 #   model_building:
 #     cmd: python src/model_building.py
