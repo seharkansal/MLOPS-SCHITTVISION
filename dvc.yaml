@@ -1,0 +1,67 @@
+stages:
+  data_ingestion:
+    cmd: python src/data/data_injestion.py
+    deps:
+    - src/data/data_ingestion.py
+    # params:
+    # - data_ingestion.test_size
+    outs:
+    - data/raw
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+    - data/raw
+    - src/data/data_collection.py
+    outs:
+    - data/interim
+
+    cmd: python src/data/input_target_pairs.py
+    deps:
+    - data/interim
+    - src/data/data_preprocessing.py
+    outs:
+    - data/processed
+
+  feature_engineering:
+    cmd: python src/features/add_special_tokens.py
+    deps:
+    - data/processed
+    - src/features/add_special_tokens.py
+    # params:
+    # - feature_engineering.max_features
+    outs:
+    - data/processed
+
+    cmd: python src/features/tokenization.py
+    deps:
+    - data/processed
+    - src/features/add_special_tokens.py
+    # params:
+    # - feature_engineering.max_features
+    outs:
+    - data/processed
+
+#   model_building:
+#     cmd: python src/model_building.py
+#     deps:
+#     - data/processed
+#     - src/model_building.py
+#     params:
+#     - model_building.n_estimators
+#     - model_building.random_state
+#     outs:
+#     - models/model.pkl
+#   model_evaluation:
+#     cmd: python src/model_evaluation.py
+#     deps:
+#     - models/model.pkl
+#     - src/model_evaluation.py
+#     metrics:
+#     - reports/metrics.json
+# params:
+# - dvclive/params.yaml
+# metrics:
+# - dvclive/metrics.json
+# plots:
+# - dvclive/plots/metrics:
+#     x: step
