@@ -1,0 +1,59 @@
+schema: '2.0'
+stages:
+  data_preprocessing:
+    cmd: python3 -m src.data.data_preprocessing
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 58c12a0c19b86e9cabf5d71030d47475.dir
+      size: 1719698
+      nfiles: 1
+    outs:
+    - path: data/interim
+      hash: md5
+      md5: da8de36d42e8d097b7e10a04a06919f8.dir
+      size: 1453552
+      nfiles: 1
+  data_ingestion:
+    cmd: python3 -m src.data.data_injestion
+    deps:
+    - path: data/raw/schitts_creek_combined_dialogues.csv
+      hash: md5
+      md5: 401a355e9c2a8d907e7e99f1d4138858
+      size: 1719698
+  input_target_pairs:
+    cmd: python src/data/input_target_pairs.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: bcfa5e2b9e15a7d043d063140dc85e5e.dir
+      size: 2840178
+      nfiles: 2
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: adc4df3b887db4e53b7bf6c8e5f63373
+      size: 4100
+  feature_engineering:
+    cmd: python src/features/add_special_tokens.py
+    deps:
+    - path: data/external
+      hash: md5
+      md5: 6138b75d0e3f0a4779ca5d78ebb94263.dir
+      size: 1940658
+      nfiles: 1
+    - path: src/features/add_special_tokens.py
+      hash: md5
+      md5: 9e217447c0968847d22d0fe73c2b170e
+      size: 2577
+  tokenization:
+    cmd: python src/features/tokenization.py
+    deps:
+    - path: data/special_tokens
+      hash: md5
+      md5: 374159f404d581b3612ee2490f885cbd.dir
+      size: 2319263
+      nfiles: 1
+    - path: src/features/add_special_tokens.py
+      hash: md5
+      md5: 9e217447c0968847d22d0fe73c2b170e
+      size: 2577

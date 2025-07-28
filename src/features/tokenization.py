@@ -7,7 +7,7 @@ import pandas as pd
 import os
 
 # Load formatted data
-df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/formatted_dataset_for_fine-tuning.csv",header=None, names=["gpt_format"])  # Replace with actual path
+df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/special_tokens/formatted_dataset_for_fine-tuning.csv",header=None, names=["gpt_format"])  # Replace with actual path
 
 # Check the data
 

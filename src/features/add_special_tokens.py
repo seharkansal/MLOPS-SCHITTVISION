@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load your dataset (update path as needed)
-df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/final_dataset.csv")
+df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/emotion_label/final_dataset.csv")
 
 import re
 

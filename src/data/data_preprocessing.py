@@ -80,8 +80,12 @@ def main():
         df = df[df['Dialogue'].apply(lambda x: len(x.split()) > 3)]
         logger.debug(f"Remaining rows after filtering: {len(df)}")
 
+         # Store the data inside data/processed
+        data_path = os.path.join("./data", "interim")
+        os.makedirs(data_path, exist_ok=True)
+
         # Save cleaned data for reference
-        cleaned_path = "./data/processed/schitts_creek_dialogues_cleaned.csv"
+        cleaned_path = "./data/interim/schitts_creek_dialogues_cleaned.csv"
         os.makedirs(os.path.dirname(cleaned_path), exist_ok=True)
         df.to_csv(cleaned_path, index=False)
         print(f"Cleaned data saved to {cleaned_path}")

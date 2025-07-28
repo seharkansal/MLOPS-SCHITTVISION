@@ -47,12 +47,12 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.error(f'Error during preprocessing: {e}')
         raise
 
-def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str) -> None:
+def save_data(train_data: pd.DataFrame, data_path: str) -> None:
     try:
         raw_data_path = os.path.join(data_path, 'raw')
         os.makedirs(raw_data_path, exist_ok=True)
         train_data.to_csv(os.path.join(raw_data_path, "train.csv"), index=False)
-        test_data.to_csv(os.path.join(raw_data_path, "test.csv"), index=False)
+        # test_data.to_csv(os.path.join(raw_data_path, "test.csv"), index=False)
         logging.info(f'Train and test data saved to {raw_data_path}')
     except Exception as e:
         logging.error(f'Error saving data: {e}')
@@ -67,8 +67,13 @@ def main():
         # s3 = s3_connection.s3_operations("bucket-name", "accesskey", "secretkey")
         # df = s3.fetch_file_from_s3("data.csv")
 
-        data_path = '/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/schitts_creek_combined_dialogues.csv'
+        data_path = 'https://raw.githubusercontent.com/seharkansal/MLOPS-SCHITTVISION/master/schitts_creek_combined_dialogues.csv'
         df = load_data(data_path)
+
+        
+        # final_df = preprocess_data(df)
+        # train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=2)
+        save_data(df, data_path='./data/raw')
         
         # processed_df = preprocess_data(df)
         

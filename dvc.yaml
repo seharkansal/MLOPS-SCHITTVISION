@@ -2,37 +2,36 @@ stages:
   data_ingestion:
     cmd: python3 -m src.data.data_injestion
     deps:
-    - src/data/data_injestion.py
-    # params:
-    # - data_ingestion.test_size
-    outs:
-    - data/external
+      - /home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/schitts_creek_combined_dialogues.csv
+    # # params:
+    # # - data_ingestion.test_size
+    # outs:
+    #  - data/processed
   data_preprocessing:
     cmd: python3 -m src.data.data_preprocessing
     deps:
-    - data/external
-    - src/data/data_collection.py
-    outs:
-    - data/interim
+    - data/raw
+    # outs:
+    # - data/interim/
 
   input_target_pairs:
 
     cmd: python src/data/input_target_pairs.py
     deps:
-    - data/interim
-    - src/data/data_preprocessing.py
-    outs:
     - data/processed
+    - src/data/data_preprocessing.py
+    # outs:
+    # - data/external
 
   feature_engineering:
     cmd: python src/features/add_special_tokens.py
     deps:
-    - data/processed
+    - data/external
     - src/features/add_special_tokens.py
     # params:
     # - feature_engineering.max_features
-    outs:
-    - data/special_tokens
+    # outs:
+    # - data/special_tokens
 
   tokenization:
     cmd: python src/features/tokenization.py
@@ -41,8 +40,8 @@ stages:
     - src/features/add_special_tokens.py
     # params:
     # - feature_engineering.max_features
-    outs:
-    - data/tokenized
+    # outs:
+    # - data/tokenized
 
 #   model_building:
 #     cmd: python src/model_building.py
