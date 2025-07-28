@@ -1,0 +1,6 @@
+outs:
+- md5: f3f53e5e999e7b42ba8dfd32e1536137.dir
+  size: 232911
+  nfiles: 3
+  hash: md5
+  path: final_emotion_tokenizer

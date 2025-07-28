@@ -1,0 +1,6 @@
+outs:
+- md5: fdfc0e8b2d8cee7c5aba7eabbd37c6ff.dir
+  size: 267845709
+  nfiles: 2
+  hash: md5
+  path: final_emotion_model
