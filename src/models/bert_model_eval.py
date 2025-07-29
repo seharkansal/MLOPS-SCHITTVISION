@@ -8,6 +8,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
 import json
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 from transformers import get_linear_schedule_with_warmup
 
 # 1. Device setup
@@ -125,9 +128,22 @@ with torch.no_grad():
 
     acc = accuracy_score(true_labels, preds)
     print(f"Validation Accuracy : {acc:.4f}")
-    report=classification_report(true_labels, preds, target_names=label_encoder.classes_)
+    report=classification_report(true_labels, preds, output_dict=True, target_names=label_encoder.classes_)
 
     print(report)
+
+    #  confusion matrix
+    cm = confusion_matrix(true_labels, preds)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=label_encoder.classes_, yticklabels=label_encoder.classes_)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title("Confusion Matrix")
+
+    # Save and log it
+    plt.tight_layout()
+    plt.savefig("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/reports/confusion_matrix.png")
+    plt.close()
 
 # Save metrics
 with open("reports/emotion_evaluation.json", "w") as f:

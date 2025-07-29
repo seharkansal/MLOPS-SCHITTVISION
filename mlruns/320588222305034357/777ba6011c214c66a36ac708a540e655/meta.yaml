@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/320588222305034357/777ba6011c214c66a36ac708a540e655/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '320588222305034357'
+lifecycle_stage: active
+run_id: 777ba6011c214c66a36ac708a540e655
+run_name: bert_emotion_classifier
+run_uuid: 777ba6011c214c66a36ac708a540e655
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753808712209
+status: 1
+tags: []
+user_id: sehar

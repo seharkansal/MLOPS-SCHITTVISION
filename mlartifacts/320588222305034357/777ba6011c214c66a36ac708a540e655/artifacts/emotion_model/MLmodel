@@ -1,0 +1,22 @@
+artifact_path: emotion_model
+flavors:
+  python_function:
+    config:
+      device: null
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.12.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.7.0+cu126
+mlflow_version: 2.22.0
+model_size_bytes: 267887019
+model_uuid: 04f02a8c69394ea181754fdc01a47ea1
+prompts: null
+run_id: 777ba6011c214c66a36ac708a540e655
+utc_time_created: '2025-07-29 17:05:12.304147'

@@ -3,22 +3,30 @@ import torch
 import torch.nn.functional as F
 import joblib
 import json
+import mlflow
 
 # Load emotion model
 emotion_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
 emotion_model = AutoModelForSequenceClassification.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_model").eval()
 label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+print(type(label_encoder))  # Should print something like <class 'sklearn.preprocessing._label.LabelEncoder'>
 
 # Load GPT model
 gpt_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
 gpt_model = AutoModelForCausalLM.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_model").eval()
 gpt_tokenizer.pad_token = gpt_tokenizer.eos_token
 
+gpt_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
+emotion_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
+
 def detect_emotion(text):
+    print("label_encoder type:", type(label_encoder))
     inputs = emotion_tokenizer(text, return_tensors="pt", truncation=True, padding=True)
     with torch.no_grad():
         logits = emotion_model(**inputs).logits
     pred = torch.argmax(F.softmax(logits, dim=1), dim=1).item()
+    print("predicted label index:", pred)
+    print("decoded label:", label_encoder.inverse_transform([pred])[0])
     return f"<<{label_encoder.inverse_transform([pred])[0]}>>"
 
 def generate_response(user_input, character):
@@ -47,6 +55,41 @@ if __name__ == "__main__":
     response = generate_response(user_input, character)
     final_response=f"{character} responds: {response}"
 
+    # Save generated response to JSON file
+    output_path = "reports/generated_responses.json"
     # Save generated output
-with open("reports/generated_responses.json", "w") as f:
-    json.dump(final_response, f, indent=2)
+    with open("reports/generated_responses.json", "w") as f:
+        json.dump(final_response, f, indent=2)
+
+ # MLflow logging
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_experiment("SchittVision-GPT-Inference")
+
+    with mlflow.start_run(run_name="gpt_inference_run"):
+        # Log input params used for generation
+        mlflow.log_params({
+            "max_new_tokens": 50,
+            "top_k": 50,
+            "top_p": 0.95,
+            "per_device_train_batch_size":4,
+            "per_device_eval_batch_size":4,
+            "num_train_epochs":3,
+            "temperature": 0.8
+        })
+
+        # Log artifacts: models, tokenizer, label encoder, generated response json
+        mlflow.pytorch.log_model(gpt_model, artifact_path="gpt_model")
+        mlflow.log_artifacts("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer", artifact_path="tokenizer")
+        mlflow.pytorch.log_model(emotion_model, artifact_path="emotion_model")
+        mlflow.log_artifacts("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer", artifact_path="emotion_tokenizer")
+        mlflow.log_artifact("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl", artifact_path="label_encoder")
+        mlflow.log_artifact(output_path, artifact_path="generated_responses")
+
+        # Log tags/metadata
+        mlflow.set_tags({
+            "author": "seharkansal",
+            "project": "SchittsVision",
+            "stage": "inference"
+        })
+
+    print("✅ Inference and artifacts logged to MLflow successfully.")
