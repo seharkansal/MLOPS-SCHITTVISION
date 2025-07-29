@@ -8,12 +8,6 @@ stages:
       md5: 58c12a0c19b86e9cabf5d71030d47475.dir
       size: 1719698
       nfiles: 1
-    outs:
-    - path: data/interim
-      hash: md5
-      md5: da8de36d42e8d097b7e10a04a06919f8.dir
-      size: 1453552
-      nfiles: 1
   data_ingestion:
     cmd: python3 -m src.data.data_injestion
     deps:
@@ -57,3 +51,81 @@ stages:
       hash: md5
       md5: 9e217447c0968847d22d0fe73c2b170e
       size: 2577
+  register_model:
+    cmd: bash -c "mkdir -p registered_models && echo 'Registered ✅' > registered_models/status.txt"
+    deps:
+    - path: models/final_emotion_model/
+      hash: md5
+      md5: fdfc0e8b2d8cee7c5aba7eabbd37c6ff.dir
+      size: 267845709
+      nfiles: 2
+    - path: models/final_emotion_tokenizer/
+      hash: md5
+      md5: f3f53e5e999e7b42ba8dfd32e1536137.dir
+      size: 232911
+      nfiles: 3
+    - path: models/final_model/
+      hash: md5
+      md5: c7f78ac804ee921796adfa2b44279186.dir
+      size: 502621805
+      nfiles: 10
+    - path: models/final_tokenizer/
+      hash: md5
+      md5: 942a931488d1efecb86d9c1349aaa4fc.dir
+      size: 4816654
+      nfiles: 6
+    outs:
+    - path: registered_models/status.txt
+      hash: md5
+      md5: c7348847a5536a7127cd7c115237bd7a
+      size: 15
+  evaluate_model:
+    cmd: python src/models/bert_model_eval.py
+    deps:
+    - path: data/data/emotions_dataset.csv
+      hash: md5
+      md5: 753e093cb4e6c77a0a8a62a2100c530b
+      size: 1658629
+    - path: models/final_emotion_model
+      hash: md5
+      md5: fdfc0e8b2d8cee7c5aba7eabbd37c6ff.dir
+      size: 267845709
+      nfiles: 2
+    - path: models/final_emotion_tokenizer
+      hash: md5
+      md5: f3f53e5e999e7b42ba8dfd32e1536137.dir
+      size: 232911
+      nfiles: 3
+    outs:
+    - path: reports/emotion_evaluation.json
+      hash: md5
+      md5: 991ccf7e47c2148d743547d0639d82da
+      size: 556
+  run_inference:
+    cmd: python src/models/response_generator.py
+    deps:
+    - path: models/final_emotion_model
+      hash: md5
+      md5: fdfc0e8b2d8cee7c5aba7eabbd37c6ff.dir
+      size: 267845709
+      nfiles: 2
+    - path: models/final_emotion_tokenizer
+      hash: md5
+      md5: f3f53e5e999e7b42ba8dfd32e1536137.dir
+      size: 232911
+      nfiles: 3
+    - path: models/final_model
+      hash: md5
+      md5: c7f78ac804ee921796adfa2b44279186.dir
+      size: 502621805
+      nfiles: 10
+    - path: models/final_tokenizer
+      hash: md5
+      md5: 942a931488d1efecb86d9c1349aaa4fc.dir
+      size: 4816654
+      nfiles: 6
+    outs:
+    - path: reports/generated_responses.json
+      hash: md5
+      md5: f7e27312151a4cfc4e1d9286592a6f94
+      size: 177

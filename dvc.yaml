@@ -43,23 +43,34 @@ stages:
     # outs:
     # - data/tokenized
 
-#   model_building:
-#     cmd: python src/model_building.py
-#     deps:
-#     - data/processed
-#     - src/model_building.py
-#     params:
-#     - model_building.n_estimators
-#     - model_building.random_state
-#     outs:
-#     - models/model.pkl
-#   model_evaluation:
-#     cmd: python src/model_evaluation.py
-#     deps:
-#     - models/model.pkl
-#     - src/model_evaluation.py
-#     metrics:
-#     - reports/metrics.json
+  register_model:
+    cmd: bash -c "mkdir -p registered_models && echo 'Registered ✅' > registered_models/status.txt"
+    deps:
+      - models/final_model/
+      - models/final_emotion_model/
+      - models/final_tokenizer/
+      - models/final_emotion_tokenizer/
+    outs:
+      - registered_models/status.txt
+
+  evaluate_model:
+    cmd: python src/models/bert_model_eval.py
+    deps:
+      - data/data/emotions_dataset.csv        
+      - models/final_emotion_model
+      - models/final_emotion_tokenizer
+    outs:
+      - reports/emotion_evaluation.json       # write metrics here
+
+  run_inference:
+    cmd: python src/models/response_generator.py
+    deps:
+      - models/final_emotion_model
+      - models/final_emotion_tokenizer
+      - models/final_model
+      - models/final_tokenizer
+    outs:
+      - reports/generated_responses.json
 # params:
 # - dvclive/params.yaml
 # metrics:

@@ -56,8 +56,8 @@ def tokenize(example):
 train_ds = train_ds.map(tokenize, batched=True)
 val_ds = val_ds.map(tokenize, batched=True)
 
-# Save tokenized dataset
-train_ds.save_to_disk("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/train_tokenized_dataset")
-val_ds.save_to_disk("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/val_tokenized_dataset")
+# # Save tokenized dataset
+# train_ds.save_to_disk("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/train_tokenized_dataset")
+# val_ds.save_to_disk("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/val_tokenized_dataset")
 
 print(train_ds[0])
