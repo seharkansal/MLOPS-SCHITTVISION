@@ -71,8 +71,8 @@ stages:
       nfiles: 10
     - path: models/final_tokenizer/
       hash: md5
-      md5: 74cc79398a5ec4b6dd293d983de2d84d.dir
-      size: 4816541
+      md5: 942a931488d1efecb86d9c1349aaa4fc.dir
+      size: 4816654
       nfiles: 6
     outs:
     - path: registered_models/status.txt
