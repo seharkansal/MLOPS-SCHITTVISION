@@ -85,6 +85,7 @@ data/*
 /data/*
 !data/*.dvc
 
+cred.txt
 
 
 

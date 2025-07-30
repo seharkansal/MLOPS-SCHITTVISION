@@ -61,9 +61,9 @@ stages:
       nfiles: 2
     - path: models/final_emotion_tokenizer/
       hash: md5
-      md5: f3f53e5e999e7b42ba8dfd32e1536137.dir
-      size: 232911
-      nfiles: 3
+      md5: 34ecf89dc43e57fe95d7609624607e72.dir
+      size: 944877
+      nfiles: 4
     - path: models/final_model/
       hash: md5
       md5: c7f78ac804ee921796adfa2b44279186.dir
@@ -71,8 +71,8 @@ stages:
       nfiles: 10
     - path: models/final_tokenizer/
       hash: md5
-      md5: 942a931488d1efecb86d9c1349aaa4fc.dir
-      size: 4816654
+      md5: 74cc79398a5ec4b6dd293d983de2d84d.dir
+      size: 4816541
       nfiles: 6
     outs:
     - path: registered_models/status.txt

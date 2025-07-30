@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>SchittVision Chat</title>
+</head>
+<body>
+    <h2>Chat with SchittVision</h2>
+    <form id="chat-form">
+        <label for="text">Your message:</label><br />
+        <textarea id="text" name="text" rows="4" cols="50" required></textarea><br />
+
+        <label for="character">Choose character:</label>
+        <select id="character" name="character">
+            <option value="<<MOIRA>>">Moira</option>
+            <option value="<<DAVID>>">David</option>
+            <option value="<<ALEXIS>>">Alexis</option>
+            <!-- Add more characters as you want -->
+        </select><br /><br />
+
+        <button type="submit">Send</button>
+    </form>
+
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const responseElem = document.getElementById('response');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const text = form.text.value;
+            const character = form.character.value;
+
+            try {
+                const res = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, character }),
+                });
+
+                if (!res.ok) throw new Error('Network response was not ok');
+
+                const data = await res.json();
+                responseElem.textContent = data.response;
+            } catch (err) {
+                responseElem.textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
