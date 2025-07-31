@@ -5,24 +5,25 @@ stages:
     deps:
     - path: data/raw
       hash: md5
-      md5: 58c12a0c19b86e9cabf5d71030d47475.dir
-      size: 1719698
-      nfiles: 1
+      md5: a04fcfd17d819ca757b3eb3fb8a42703.dir
+      size: 3403541
+      nfiles: 4
   data_ingestion:
     cmd: python3 -m src.data.data_injestion
     deps:
-    - path: data/raw/schitts_creek_combined_dialogues.csv
+    - path: data/raw
       hash: md5
-      md5: 401a355e9c2a8d907e7e99f1d4138858
-      size: 1719698
+      md5: a04fcfd17d819ca757b3eb3fb8a42703.dir
+      size: 3403541
+      nfiles: 4
   input_target_pairs:
     cmd: python src/data/input_target_pairs.py
     deps:
-    - path: data/processed
+    - path: data/interim
       hash: md5
-      md5: bcfa5e2b9e15a7d043d063140dc85e5e.dir
-      size: 2840178
-      nfiles: 2
+      md5: da8de36d42e8d097b7e10a04a06919f8.dir
+      size: 1453552
+      nfiles: 1
     - path: src/data/data_preprocessing.py
       hash: md5
       md5: adc4df3b887db4e53b7bf6c8e5f63373
@@ -71,8 +72,8 @@ stages:
       nfiles: 10
     - path: models/final_tokenizer/
       hash: md5
-      md5: 942a931488d1efecb86d9c1349aaa4fc.dir
-      size: 4816654
+      md5: 74cc79398a5ec4b6dd293d983de2d84d.dir
+      size: 4816541
       nfiles: 6
     outs:
     - path: registered_models/status.txt

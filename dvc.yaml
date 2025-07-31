@@ -2,7 +2,7 @@ stages:
   data_ingestion:
     cmd: python3 -m src.data.data_injestion
     deps:
-      - /home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/schitts_creek_combined_dialogues.csv
+      - data/raw
     # # params:
     # # - data_ingestion.test_size
     # outs:
@@ -18,7 +18,7 @@ stages:
 
     cmd: python src/data/input_target_pairs.py
     deps:
-    - data/processed
+    - data/interim
     - src/data/data_preprocessing.py
     # outs:
     # - data/external

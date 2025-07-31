@@ -71,8 +71,8 @@ def generate_input_target_pairs(file_path, context_window_size):
 
 
 # ===== Main execution =====
-data_path = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/processed/schitts_creek_dialogues_cleaned.csv"
-output_path = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/processed/input_target_pairs_final.csv"
+data_path = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/interim/schitts_creek_dialogues_cleaned.csv"
+output_path = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/external/input_target_pairs_final.csv"
 context_window_size = 3
 
 try:
