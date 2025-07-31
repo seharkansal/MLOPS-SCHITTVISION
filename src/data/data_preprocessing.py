@@ -68,7 +68,7 @@ def main():
     try:
         # Fetch the data from data/raw
         # Load the CSV file
-        df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/raw/schitts_creek_combined_dialogues.csv")
+        df = pd.read_csv("./data/raw/schitts_creek_combined_dialogues.csv")
         # train_data = pd.read_csv('./data/raw/train.csv')
         # test_data = pd.read_csv('./data/raw/test.csv')
         logger.debug('Data loaded properly')

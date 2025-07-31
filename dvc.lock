@@ -26,15 +26,15 @@ stages:
       nfiles: 1
     - path: src/data/data_preprocessing.py
       hash: md5
-      md5: adc4df3b887db4e53b7bf6c8e5f63373
-      size: 4100
+      md5: 7374d584c0822885b1476a2fe44007ac
+      size: 4046
   feature_engineering:
     cmd: python src/features/add_special_tokens.py
     deps:
     - path: data/external
       hash: md5
-      md5: 6138b75d0e3f0a4779ca5d78ebb94263.dir
-      size: 1940658
+      md5: abe0961c7932439a273d66e1773fe2eb.dir
+      size: 1386626
       nfiles: 1
     - path: src/features/add_special_tokens.py
       hash: md5
