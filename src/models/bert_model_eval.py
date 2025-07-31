@@ -45,7 +45,7 @@ class EmotionDataset(Dataset):
 
 # 2. Load and prepare data
 print("Loading dataset...")
-df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/data/emotions_dataset.csv")
+df = pd.read_csv("./data/data/emotions_dataset.csv")
 texts = df['Text'].tolist()
 emotions = df['Emotion'].tolist()
 
@@ -55,7 +55,7 @@ labels = label_encoder.fit_transform(emotions)
 num_labels = len(label_encoder.classes_)
 print(f"Classes found: {label_encoder.classes_}")
 
-joblib.dump(label_encoder, "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+joblib.dump(label_encoder, "./data/label_encoder.pkl")
 print("Label encoder saved.")
 
 # Train-validation split
@@ -64,7 +64,7 @@ train_texts, val_texts, train_labels, val_labels = train_test_split(
 )
 
 # Tokenizer and datasets
-tokenizer = DistilBertTokenizer.from_pretrained('/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer')
+tokenizer = DistilBertTokenizer.from_pretrained('./models/final_emotion_tokenizer')
 
 train_dataset = EmotionDataset(train_texts, train_labels, tokenizer)
 val_dataset = EmotionDataset(val_texts, val_labels, tokenizer)
@@ -86,7 +86,7 @@ val_loader = DataLoader(
 
 # Load model and move to device
 model = DistilBertForSequenceClassification.from_pretrained(
-    '/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_model',
+    './models/final_emotion_model',
     num_labels=num_labels
 )
 model.to(device)
@@ -142,7 +142,7 @@ with torch.no_grad():
 
     # Save and log it
     plt.tight_layout()
-    plt.savefig("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/reports/confusion_matrix.png")
+    plt.savefig("./reports/confusion_matrix.png")
     plt.close()
 
 # Save metrics
