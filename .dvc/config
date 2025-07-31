@@ -2,3 +2,4 @@
     remote = dvcstore
 ['remote "dvcstore"']
     url = s3://schittvisionbucket
+    region = us-east-1
