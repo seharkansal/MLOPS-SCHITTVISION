@@ -75,14 +75,14 @@ target/
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# Ignore all data by default
+# Ignore all files inside data/
 data/*
 
-# But keep raw data's DVC file and directory
+# But keep DVC files and directories for raw and processed data
 !data/raw/
-!data/processed
-!data/raw.dvc
-data/**
+!data/raw/*.dvc
+!data/processed/
+!data/processed/*.dvc
 !data/**/*.dvc
 
 cred.txt
