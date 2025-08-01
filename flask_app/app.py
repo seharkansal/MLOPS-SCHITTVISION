@@ -62,22 +62,22 @@ def get_latest_model_uri(model_name, stage="Staging"):
 # # Load emotion model
 # emotion_tokenizer = AutoTokenizer.from_pretrained("mlflow-artifacts:/777957520883453524/f7675dc40496467c9b8fa9dc7284d546/artifacts/emotion_tokenizer")
 # emotion_model = AutoModelForSequenceClassification.from_pretrained("runs:/f7675dc40496467c9b8fa9dc7284d546/emotion_model").eval()
-label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+label_encoder = joblib.load("./data/label_encoder.pkl")
 
 # # # Load GPT model
-gpt_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
+gpt_tokenizer = AutoTokenizer.from_pretrained("./models/final_tokenizer")
 # gpt_model = AutoModelForCausalLM.from_pretrained("runs:/f7675dc40496467c9b8fa9dc7284d546/gpt_model").eval()
 gpt_tokenizer.pad_token = gpt_tokenizer.eos_token
 
-gpt_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
+gpt_tokenizer.save_pretrained("./models/final_tokenizer")
 
 # ---------- Load Registered Models ----------
 # Emotion Detection Model
 emotion_model_uri = get_latest_model_uri("emotion_model")
 emotion_model = mlflow.pytorch.load_model(emotion_model_uri).eval()
-emotion_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
+emotion_tokenizer = AutoTokenizer.from_pretrained("./models/final_emotion_tokenizer")
 
-emotion_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
+emotion_tokenizer.save_pretrained("./models/final_emotion_tokenizer")
 # GPT Response Model
 gpt_model_uri = get_latest_model_uri("gpt_model")
 gpt_model = mlflow.pytorch.load_model(gpt_model_uri).eval()
