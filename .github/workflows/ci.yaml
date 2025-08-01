@@ -34,6 +34,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: dvc pull --force
 
+      - name: Generate dummy inference input
+        run: |
+         echo '{"text": "I feel great", "character": "moira"}' > data/inference_input.json
+
       - name: Run DVC pipeline
         # env:
           # CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
