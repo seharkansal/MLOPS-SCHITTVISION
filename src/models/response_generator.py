@@ -4,6 +4,33 @@ import torch.nn.functional as F
 import joblib
 import json
 import mlflow
+import os
+import dagshub
+
+# Below code block is for production use
+# -------------------------------------------------------------------------------------
+# Set up DagsHub credentials for MLflow tracking
+# dagshub_token = os.getenv("CAPSTONE_TEST")
+# if not dagshub_token:
+#     raise EnvironmentError("CAPSTONE_TEST environment variable is not set")
+
+# os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "seharkansal"
+repo_name = "MLOPS-SCHITTVISION"
+
+# Set up MLflow tracking URI
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
+# -------------------------------------------------------------------------------------
+
+# Below code block is for local use
+# -------------------------------------------------------------------------------------
+# mlflow.set_tracking_uri('https://dagshub.com/vikashdas770/YT-Capstone-Project.mlflow')
+dagshub.init(repo_owner='seharkansal', repo_name='MLOPS-SCHITTVISION', mlflow=True)
+# -------------------------------------------------------------------------------------
+
 
 # Load emotion model
 emotion_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
@@ -45,13 +72,16 @@ def generate_response(user_input, character):
             pad_token_id=gpt_tokenizer.eos_token_id
         )
     generated = gpt_tokenizer.decode(output_ids[0], skip_special_tokens=False)
-    return generated.replace(prompt, "").strip()
+    response = generated.replace(prompt, "").strip()
+    return response, emotion
 
 
 # Example run
 if __name__ == "__main__":
-    user_input = "I’m just feeling really overwhelmed lately."
-    character = "<<MOIRA>>"  # User selects the character
+    with open("data/inference_input.json", "r") as f:
+        input_data = json.load(f)
+    user_input = input_data["user_input"]
+    character = input_data["character"]
     response = generate_response(user_input, character)
     final_response=f"{character} responds: {response}"
 
@@ -62,7 +92,7 @@ if __name__ == "__main__":
         json.dump(final_response, f, indent=2)
 
  # MLflow logging
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    # mlflow.set_tracking_uri("http://127.0.0.1:5000")
     mlflow.set_experiment("SchittVision-GPT-Inference")
 
     with mlflow.start_run(run_name="gpt_inference_run"):
@@ -70,7 +100,7 @@ if __name__ == "__main__":
         mlflow.log_params({
             "max_new_tokens": 50,
             "top_k": 50,
-            "top_p": 0.95,
+            "top_p": 0.94,
             "per_device_train_batch_size":4,
             "per_device_eval_batch_size":4,
             "num_train_epochs":3,

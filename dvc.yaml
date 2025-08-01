@@ -43,8 +43,8 @@ stages:
     # outs:
     # - data/tokenized
 
-  register_model:
-    cmd: bash -c "mkdir -p registered_models && echo 'Registered ✅' > registered_models/status.txt"
+  trained_model:
+    cmd: bash -c "mkdir -p trained_models && echo 'trained ✅' > registered_models/status.txt"
     deps:
       - models/final_model/
       - models/final_emotion_model/
@@ -65,12 +65,21 @@ stages:
   run_inference:
     cmd: python src/models/response_generator.py
     deps:
+      - data/inference_input.json
       - models/final_emotion_model
       - models/final_emotion_tokenizer
       - models/final_model
       - models/final_tokenizer
     outs:
       - reports/generated_responses.json
+
+  register_model:
+    cmd: python src/models/register_model.py
+    deps:
+      - reports/emotion_evaluation.json
+      - reports/generated_responses.json
+      # - models/final_emotion_model
+      # - models/final_model
 # params:
 # - dvclive/params.yaml
 # metrics:

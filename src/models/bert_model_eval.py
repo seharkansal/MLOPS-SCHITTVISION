@@ -8,14 +8,39 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
 import json
+import logging
+import mlflow.pytorch
+from transformers import TextClassificationPipeline
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from transformers import get_linear_schedule_with_warmup
+import mlflow
+import os
+import dagshub
 
-# 1. Device setup
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
+# Below code block is for production use
+# -------------------------------------------------------------------------------------
+# Set up DagsHub credentials for MLflow tracking
+# dagshub_token = os.getenv("CAPSTONE_TEST")
+# if not dagshub_token:
+#     raise EnvironmentError("CAPSTONE_TEST environment variable is not set")
+
+# os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "seharkansal"
+repo_name = "MLOPS-SCHITTVISION"
+
+# Set up MLflow tracking URI
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
+# -------------------------------------------------------------------------------------
+
+# Below code block is for local use
+# -------------------------------------------------------------------------------------
+# mlflow.set_tracking_uri('https://dagshub.com/vikashdas770/YT-Capstone-Project.mlflow')
+dagshub.init(repo_owner='seharkansal', repo_name='MLOPS-SCHITTVISION', mlflow=True)
 
 class EmotionDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_len=128):
@@ -45,7 +70,7 @@ class EmotionDataset(Dataset):
 
 # 2. Load and prepare data
 print("Loading dataset...")
-df = pd.read_csv("./data/data/emotions_dataset.csv")
+df = pd.read_csv("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/data/emotions_dataset.csv")
 texts = df['Text'].tolist()
 emotions = df['Emotion'].tolist()
 
@@ -55,7 +80,7 @@ labels = label_encoder.fit_transform(emotions)
 num_labels = len(label_encoder.classes_)
 print(f"Classes found: {label_encoder.classes_}")
 
-joblib.dump(label_encoder, "./data/label_encoder.pkl")
+joblib.dump(label_encoder, "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
 print("Label encoder saved.")
 
 # Train-validation split
@@ -89,7 +114,6 @@ model = DistilBertForSequenceClassification.from_pretrained(
     './models/final_emotion_model',
     num_labels=num_labels
 )
-model.to(device)
 
 # Optimizer and scheduler setup
 optimizer = AdamW(model.parameters(), lr=2e-5)
@@ -115,9 +139,9 @@ preds = []
 true_labels = []
 with torch.no_grad():
     for batch in val_loader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].to(device)
+            input_ids = batch['input_ids']
+            attention_mask = batch['attention_mask']
+            labels = batch['label']
 
             outputs = model(input_ids, attention_mask=attention_mask)
             logits = outputs.logits
@@ -149,4 +173,91 @@ with torch.no_grad():
 with open("reports/emotion_evaluation.json", "w") as f:
     json.dump(report, f, indent=2)
 
+def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
+    """Save the model run ID and path to a JSON file."""
+    try:
+        model_info = {'run_id': run_id, 'model_path': model_path}
+        with open(file_path, 'w') as file:
+            json.dump(model_info, file, indent=4)
+        logging.debug('Model info saved to %s', file_path)
+    except Exception as e:
+        logging.error('Error occurred while saving the model info: %s', e)
+        raise
+
 print("✅ Emotion model evaluation complete.")
+
+
+
+# ========== Constants ==========
+CSV_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/data/emotions_dataset.csv"
+MODEL_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_model"
+TOKENIZER_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer"
+ENCODER_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl"
+METRICS_JSON_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/reports/emotion_evaluation.json"
+CONFUSION_MATRIX_PATH = "/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/reports/confusion_matrix.png"
+EXPERIMENT_NAME = "SchittVision-Emotion-BERT"
+
+# Helper to flatten classification report dict
+def flatten_metrics(metrics, parent_key='', sep='_'):
+    flat_dict = {}
+    for k, v in metrics.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            flat_dict.update(flatten_metrics(v, new_key, sep=sep))
+        elif isinstance(v, (int, float)):
+            flat_dict[new_key] = v
+    return flat_dict
+
+# ========== Skip if Already Trained ==========
+if os.path.exists(MODEL_PATH):
+    print("✅ Model already exists. Skipping training.")
+else:
+    print("⚠️ No model found. Please train before evaluation.")
+    exit()
+
+# ========== MLflow Tracking ==========
+mlflow.set_experiment(EXPERIMENT_NAME)
+with mlflow.start_run() as run:
+    # Log Params
+    mlflow.log_params({
+        "model": "distilbert-base-uncased",
+        "epochs": 3,
+        "batch_size": 8,
+        "lr": 2e-5,
+        "max_length":128,
+        "scheduler": "linear_warmup",
+        "gradient_accumulation_steps": 4
+    })
+
+    # Load and log metrics JSON
+    with open(METRICS_JSON_PATH, "r") as f:
+        metrics = json.load(f)
+
+    flat_metrics = flatten_metrics(metrics)
+    for k, v in flat_metrics.items():
+        mlflow.log_metric(k, v)
+
+    # Log artifacts
+    mlflow.log_artifact(METRICS_JSON_PATH, artifact_path="eval_reports")
+    if os.path.exists(CONFUSION_MATRIX_PATH):
+        mlflow.log_artifact(CONFUSION_MATRIX_PATH, artifact_path="eval_reports")
+
+    # Log model
+    mlflow.pytorch.log_model(model, artifact_path="emotion_model")
+    pipeline = TextClassificationPipeline(model=model, tokenizer=tokenizer, return_all_scores=True)
+    mlflow.transformers.log_model(transformers_model=pipeline, artifact_path="emotion_pipeline")
+
+    # Save model info
+    save_model_info(run.info.run_id, "model", 'reports/experiment_info.json')
+
+    # Log encoder
+    mlflow.log_artifact(ENCODER_PATH, artifact_path="label_encoder")
+
+    # Set tags
+    mlflow.set_tags({
+        "author": "seharkansal",
+        "project": "SchittsVision",
+        "stage": "Evaluation Logging"
+    })
+
+print("✅ Model, tokenizer, encoder, metrics, and artifacts logged to MLflow.")
