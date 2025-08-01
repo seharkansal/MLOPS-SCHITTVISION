@@ -36,9 +36,9 @@ jobs:
 
       - name: Generate dummy inference input
         run: |
-         echo '{"text": "I feel great", "character": "moira"}' > data/inference_input.json
+         echo '{"text": "ew david, "character": "david"}' > data/inference_input.json
 
       - name: Run DVC pipeline
-        # env:
-          # CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+        env:
+          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
         run: dvc repro

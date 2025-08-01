@@ -2,16 +2,24 @@ import mlflow
 from mlflow.tracking import MlflowClient
 import dagshub
 import warnings
+import os
 
 warnings.simplefilter("ignore", UserWarning)
 warnings.filterwarnings("ignore")
+
+dagshub_token = os.getenv("CAPSTONE_TEST")
+if not dagshub_token:
+    raise EnvironmentError("CAPSTONE_TEST environment variable is not set")
+
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
 dagshub_url = "https://dagshub.com"
 repo_owner = "seharkansal"
 repo_name = "MLOPS-SCHITTVISION"
 
 mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
-dagshub.init(repo_owner=repo_owner, repo_name=repo_name, mlflow=True)
+# dagshub.init(repo_owner=repo_owner, repo_name=repo_name, mlflow=True)
 
 experiment_name = "SchittVision-GPT-Inference"  # Your inference pipeline experiment name
 emotion_model_name = "emotion_model"
