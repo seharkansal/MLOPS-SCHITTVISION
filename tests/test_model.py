@@ -48,7 +48,7 @@ def get_latest_model_uri(model_name, stage="Staging"):
 # # Load emotion model
 # emotion_tokenizer = AutoTokenizer.from_pretrained("mlflow-artifacts:/777957520883453524/f7675dc40496467c9b8fa9dc7284d546/artifacts/emotion_tokenizer")
 # emotion_model = AutoModelForSequenceClassification.from_pretrained("runs:/f7675dc40496467c9b8fa9dc7284d546/emotion_model").eval()
-label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+label_encoder = joblib.load("./data/label_encoder.pkl")
 
 # # # Load GPT model
 # gpt_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
@@ -79,7 +79,7 @@ class TestModelLoading_emotion(unittest.TestCase):
         cls.emotion_model_uri = get_latest_model_uri(cls.new_emotion_model_name)
         cls.new_emotion_model = mlflow.pytorch.load_model(cls.emotion_model_uri)
 
-        cls.label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+        cls.label_encoder = joblib.load("./data/label_encoder.pkl")
 
         cls.emotion_tokenizer = AutoTokenizer.from_pretrained("./models/final_emotion_tokenizer")
 
@@ -155,7 +155,7 @@ class TestModelLoading_gpt(unittest.TestCase):
 
         cls.new_emotion_model = mlflow.pytorch.load_model(cls.emotion_model_uri)
 
-        cls.label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+        cls.label_encoder = joblib.load("./data/label_encoder.pkl")
 
         cls.emotion_tokenizer = AutoTokenizer.from_pretrained("./models/final_emotion_tokenizer")
 
