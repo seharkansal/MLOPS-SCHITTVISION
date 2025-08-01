@@ -15,8 +15,6 @@ import json
 import logging
 import mlflow.pytorch
 from transformers import TextClassificationPipeline
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from transformers import get_linear_schedule_with_warmup
 import mlflow

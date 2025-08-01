@@ -24,13 +24,11 @@ repo_name = "MLOPS-SCHITTVISION"
 # Set up MLflow tracking URI
 mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 # -------------------------------------------------------------------------------------
-
 # Below code block is for local use
 # -------------------------------------------------------------------------------------
 # mlflow.set_tracking_uri('https://dagshub.com/vikashdas770/YT-Capstone-Project.mlflow')
 # dagshub.init(repo_owner='seharkansal', repo_name='MLOPS-SCHITTVISION', mlflow=True)
 # -------------------------------------------------------------------------------------
-
 
 # Load emotion model
 emotion_tokenizer = AutoTokenizer.from_pretrained("./models/final_emotion_tokenizer")
