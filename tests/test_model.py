@@ -110,16 +110,21 @@ class TestModelLoading_emotion(unittest.TestCase):
         y_holdout = self.holdout_data["label"].tolist()
         inputs = self.emotion_tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 
+         # Encode string labels to integers using the same encoder used during training
+    # label_encoder = LabelEncoder()
+        # self.label_encoder.fit(self.holdout_data["label"])  # or load from file if saved during training
+        y_true = self.label_encoder.transform(y_holdout)
+
         with torch.no_grad():
             logits = self.new_emotion_model(**inputs).logits
             preds = torch.argmax(logits, dim=1).numpy()
         y_pred = preds
 
         # Calculate performance metrics for the new model
-        accuracy_new = accuracy_score(y_holdout, y_pred)
-        precision = precision_score(y_holdout, y_pred, average='weighted')
-        recall = recall_score(y_holdout, y_pred, average='weighted')
-        f1 = f1_score(y_holdout, y_pred, average='weighted')
+        accuracy_new = accuracy_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, average='weighted')
+        recall = recall_score(y_true, y_pred, average='weighted')
+        f1 = f1_score(y_true, y_pred, average='weighted')
 
         # Define expected thresholds for the performance metrics
         expected_accuracy = 0.40
