@@ -86,7 +86,7 @@ class TestModelLoading_emotion(unittest.TestCase):
         cls.emotion_tokenizer.save_pretrained("./models/final_emotion_tokenizer")
 
          # Load holdout test data
-        cls.holdout_data = pd.read_csv('./data/data/test.txt')
+        cls.holdout_data = pd.read_csv('./data/data/test.csv')
 
     def test_model_loaded_properly(self):
         self.assertIsNotNone(self.new_emotion_model)
@@ -102,11 +102,12 @@ class TestModelLoading_emotion(unittest.TestCase):
 
     def test_model_performance(self):
         # Extract features and labels from holdout test data
-        X_holdout = self.holdout_data.iloc[:,0:-1]
-        y_holdout = self.holdout_data.iloc[:,-1]
+        # X_holdout = self.holdout_data.iloc[:,0:-1]
+        # y_holdout = self.holdout_data.iloc[:,-1]
 
         # Predict using the new model
-        texts = X_holdout.iloc[:, 0].tolist()
+        texts = self.holdout_data["text"].tolist()
+        y_holdout = self.holdout_data["label"].tolist()
         inputs = self.emotion_tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
 
         with torch.no_grad():
