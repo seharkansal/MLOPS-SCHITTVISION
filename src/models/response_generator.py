@@ -33,18 +33,18 @@ mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
 
 # Load emotion model
-emotion_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
-emotion_model = AutoModelForSequenceClassification.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_model").eval()
-label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl")
+emotion_tokenizer = AutoTokenizer.from_pretrained("./models/final_emotion_tokenizer")
+emotion_model = AutoModelForSequenceClassification.from_pretrained("./models/final_emotion_model").eval()
+label_encoder = joblib.load("./data/label_encoder.pkl")
 print(type(label_encoder))  # Should print something like <class 'sklearn.preprocessing._label.LabelEncoder'>
 
 # Load GPT model
-gpt_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
-gpt_model = AutoModelForCausalLM.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_model").eval()
+gpt_tokenizer = AutoTokenizer.from_pretrained("./models/final_tokenizer")
+gpt_model = AutoModelForCausalLM.from_pretrained("./models/final_model").eval()
 gpt_tokenizer.pad_token = gpt_tokenizer.eos_token
 
-gpt_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
-emotion_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
+gpt_tokenizer.save_pretrained("./models/final_tokenizer")
+emotion_tokenizer.save_pretrained("./models/final_emotion_tokenizer")
 
 def detect_emotion(text):
     print("label_encoder type:", type(label_encoder))
@@ -109,10 +109,10 @@ if __name__ == "__main__":
 
         # Log artifacts: models, tokenizer, label encoder, generated response json
         mlflow.pytorch.log_model(gpt_model, artifact_path="gpt_model")
-        mlflow.log_artifacts("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer", artifact_path="tokenizer")
+        mlflow.log_artifacts("./models/final_tokenizer", artifact_path="tokenizer")
         mlflow.pytorch.log_model(emotion_model, artifact_path="emotion_model")
-        mlflow.log_artifacts("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer", artifact_path="emotion_tokenizer")
-        mlflow.log_artifact("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/data/label_encoder.pkl", artifact_path="label_encoder")
+        mlflow.log_artifacts("./models/final_emotion_tokenizer", artifact_path="emotion_tokenizer")
+        mlflow.log_artifact("./data/label_encoder.pkl", artifact_path="label_encoder")
         mlflow.log_artifact(output_path, artifact_path="generated_responses")
 
         # Log tags/metadata
