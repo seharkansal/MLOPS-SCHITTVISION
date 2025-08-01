@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate dummy inference input
         run: |
-         echo '{"text": "ew david, "character": "david"}' > data/inference_input.json
+         echo '{"text": "ew david" , "character": "david"}' > data/inference_input.json
 
       - name: Run DVC pipeline
         env:
