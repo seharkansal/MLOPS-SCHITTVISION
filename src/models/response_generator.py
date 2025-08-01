@@ -80,7 +80,7 @@ def generate_response(user_input, character):
 if __name__ == "__main__":
     with open("./data/inference_input.json", "r") as f:
         input_data = json.load(f)
-    user_input = input_data["user_input"]
+    user_input = input_data["text"]
     character = input_data["character"]
     response = generate_response(user_input, character)
     final_response=f"{character} responds: {response}"
