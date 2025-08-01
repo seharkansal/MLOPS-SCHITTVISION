@@ -12,22 +12,44 @@ from flask import Flask, request, jsonify
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import joblib
+import dagshub
 from flask import Flask, request, jsonify, send_from_directory
 
 
-import mlflow
-mlflow.set_tracking_uri("http://127.0.0.1:5000")  # or your remote server URL
+# Below code block is for production use
+# -------------------------------------------------------------------------------------
+# Set up DagsHub credentials for MLflow tracking
+# dagshub_token = os.getenv("CAPSTONE_TEST")
+# if not dagshub_token:
+#     raise EnvironmentError("CAPSTONE_TEST environment variable is not set")
+
+# os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+# os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "seharkansal"
+repo_name = "MLOPS-SCHITTVISION"
+
+# Set up MLflow tracking URI
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
+# -------------------------------------------------------------------------------------
+
+# Below code block is for local use
+# -------------------------------------------------------------------------------------
+# mlflow.set_tracking_uri('https://dagshub.com/vikashdas770/YT-Capstone-Project.mlflow')
+dagshub.init(repo_owner='seharkansal', repo_name='MLOPS-SCHITTVISION', mlflow=True)
 
 from mlflow.tracking import MlflowClient
 
 client = MlflowClient()
+
 registered_models = client.search_registered_models()
 print("Registered models:", [rm.name for rm in registered_models])
 
 app = Flask(__name__)
 
 # ---------- MLflow Utility Function ----------
-def get_latest_model_uri(model_name, stage="Production"):
+def get_latest_model_uri(model_name, stage="Staging"):
     client = MlflowClient()
     latest = client.get_latest_versions(model_name, stages=[stage])
     if not latest:
@@ -44,10 +66,9 @@ label_encoder = joblib.load("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVI
 # # # Load GPT model
 gpt_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
 # gpt_model = AutoModelForCausalLM.from_pretrained("runs:/f7675dc40496467c9b8fa9dc7284d546/gpt_model").eval()
-# # gpt_tokenizer.pad_token = gpt_tokenizer.eos_token
+gpt_tokenizer.pad_token = gpt_tokenizer.eos_token
 
 gpt_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_tokenizer")
-
 
 # ---------- Load Registered Models ----------
 # Emotion Detection Model
@@ -57,7 +78,7 @@ emotion_tokenizer = AutoTokenizer.from_pretrained("/home/sehar/MLOPS/MLOPS-SCHIT
 
 emotion_tokenizer.save_pretrained("/home/sehar/MLOPS/MLOPS-SCHITTVISION/MLOPS-SCHITTVISION/models/final_emotion_tokenizer")
 # GPT Response Model
-gpt_model_uri = get_latest_model_uri("my_gpt_model")
+gpt_model_uri = get_latest_model_uri("gpt_model")
 gpt_model = mlflow.pytorch.load_model(gpt_model_uri).eval()
 # gpt_tokenizer = AutoTokenizer.from_pretrained(gpt_model_uri)
 
