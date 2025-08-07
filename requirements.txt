@@ -175,6 +175,10 @@ zc.lockfile==3.0.post1
 zipp==3.19.2
 prometheus_client
 transformers
-torch
+torch==2.8.0+cpu
+torchaudio==2.8.0+cpu
+torchvision
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 
 -e .
