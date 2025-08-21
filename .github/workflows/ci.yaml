@@ -31,10 +31,6 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
           pip install dvc[s3]   # or your remote type
 
-      - name: Set working directory
-        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
-        run: echo "Changed directory to repo root for scripts"
-
       # - name: Pull DVC data
       #   working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
       #   env:
