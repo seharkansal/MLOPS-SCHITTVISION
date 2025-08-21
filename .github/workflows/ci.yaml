@@ -5,9 +5,9 @@ on: push
 jobs:
   Continous-Integration:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
+    # defaults:
+    #   run:
+    #     working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
 
     steps:
       - name: Checkout code
