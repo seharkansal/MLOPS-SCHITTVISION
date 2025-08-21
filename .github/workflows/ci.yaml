@@ -5,6 +5,9 @@ on: push
 jobs:
   Continous-Integration:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
 
     steps:
       - name: Checkout code
@@ -28,38 +31,44 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
           pip install dvc[s3]   # or your remote type
 
+      - name: Set working directory
+        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
+        run: echo "Changed directory to repo root for scripts"
+
       - name: Pull DVC data
+        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
         run: dvc pull --force
 
-      # - name: Generate dummy inference input
-      #   run: |
-      #    echo '{"text": "ew david" , "character": "david"}' > data/inference_input.json
+      - name: Generate dummy inference input
+        run: |
+         echo '{"text": "ew david" , "character": "david"}' > data/inference_input.json
 
-      # - name: Run DVC pipeline
-      #   env:
-      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-      #   run: dvc repro
+      - name: Run DVC pipeline
+        env:
+          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+        run: dvc repro
 
-      # - name: Run model tests
-      #   env:
-      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-      #   run: |
-      #     python -m unittest tests/test_model.py
+      - name: Run model tests
+        env:
+          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+        run: |
+          python -m unittest tests/test_model.py
 
-      # - name: Promote model to production
-      #   if: success()
-      #   env:
-      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-      #   run: python scripts/promote_model.py
+      - name: Promote model to production
+        if: success()
+        env:
+          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+        run: python scripts/promote_model.py
 
-      # - name: Run Flask app tests
-      #   if: success()
-      #   env:
-      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-      #   run: python -m unittest tests/test_app.py
+      - name: Run Flask app tests
+        if: success()
+        env:
+          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+        run: python -m unittest tests/test_app.py
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
