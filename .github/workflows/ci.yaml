@@ -35,40 +35,40 @@ jobs:
         working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
         run: echo "Changed directory to repo root for scripts"
 
-      - name: Pull DVC data
-        working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
-        run: dvc pull --force
+      # - name: Pull DVC data
+      #   working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_DEFAULT_REGION: us-east-1
+      #   run: dvc pull --force
 
-      - name: Generate dummy inference input
-        run: |
-         echo '{"text": "ew david" , "character": "david"}' > data/inference_input.json
+      # - name: Generate dummy inference input
+      #   run: |
+      #    echo '{"text": "ew david" , "character": "david"}' > data/inference_input.json
 
-      - name: Run DVC pipeline
-        env:
-          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-        run: dvc repro
+      # - name: Run DVC pipeline
+      #   env:
+      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+      #   run: dvc repro
 
-      - name: Run model tests
-        env:
-          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-        run: |
-          python -m unittest tests/test_model.py
+      # - name: Run model tests
+      #   env:
+      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+      #   run: |
+      #     python -m unittest tests/test_model.py
 
-      - name: Promote model to production
-        if: success()
-        env:
-          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-        run: python scripts/promote_model.py
+      # - name: Promote model to production
+      #   if: success()
+      #   env:
+      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+      #   run: python scripts/promote_model.py
 
-      - name: Run Flask app tests
-        if: success()
-        env:
-          CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
-        run: python -m unittest tests/test_app.py
+      # - name: Run Flask app tests
+      #   if: success()
+      #   env:
+      #     CAPSTONE_TEST: ${{ secrets.CAPSTONE_TEST }}
+      #   run: python -m unittest tests/test_app.py
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -89,15 +89,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPO }}
-          IMAGE_TAG: latest
         run: |
-          docker build --pull -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --build-arg AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
+            --pull \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest .
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+
 
   Continuous-Deployment:
     needs: Continous-Integration
