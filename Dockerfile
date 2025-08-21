@@ -26,7 +26,7 @@ RUN dvc pull --force
 EXPOSE 5001
 
 # Run Flask app
-CMD ["python3", "flask_app/app.py"]
+CMD ["python3", "-m", "flask_app.app"]
 
 # Production
 # CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]
