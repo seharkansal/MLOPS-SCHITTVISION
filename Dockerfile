@@ -17,8 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY flask_app/ /app/
 
 # Copy DVC pipeline config files
+COPY .git /app/.git
 COPY .dvc /app/.dvc
-COPY *.dvc dvc.lock /app/
+COPY dvc.lock /app/
+
 
 # Pass secrets for DVC remote access
 ARG CAPSTONE_TEST
