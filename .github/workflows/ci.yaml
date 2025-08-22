@@ -86,15 +86,15 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Build, tag, and push image to Amazon ECR
-        run: |
-          docker build \
-            --build AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --build AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --build AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
-            --pull \
-            -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest .
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
+      - name: Build, tag, and push image to Amazon ECR 
+        id: build-image 
+        env: ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
+              ECR_REPOSITORY: ${{ secrets.ECR_REPO }} 
+              IMAGE_TAG: latest
+        run: | 
+            docker build --pull -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
+            echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
   Continuous-Deployment:
