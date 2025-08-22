@@ -6,32 +6,18 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage cache
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 
-# Install Python dependencies + DVC
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir dvc[s3]
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy app code
 COPY flask_app/ /app/
 
-# Copy DVC pipeline config files
-COPY .git /app/.git
-COPY .dvc /app/.dvc
-COPY dvc.lock /app/
-
-
-# Pass secrets for DVC remote access
-ARG CAPSTONE_TEST
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-ENV CAPSTONE_TEST=$CAPSTONE_TEST
-ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-
-# Pull all DVC-tracked files from remote
-RUN dvc pull
+# Copy data and models (they are already pulled by CI)
+COPY data/ /app/data/
+COPY models/ /app/models/
 
 # Expose port
 EXPOSE 5001
