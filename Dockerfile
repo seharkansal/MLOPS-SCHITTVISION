@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app code
-COPY flask_app/ /app/
+COPY flask_app/ /app/flask_app/
 
 # Copy data and models (they are already pulled by CI)
 COPY data/ /app/data/
