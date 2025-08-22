@@ -31,13 +31,15 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
           pip install dvc[s3]   # or your remote type
 
-      # - name: Pull DVC data
-      #   working-directory: ./MLOPS-SCHITTVISION/MLOPS-SCHITTVISION
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_DEFAULT_REGION: us-east-1
-      #   run: dvc pull --force
+      - name: Pull DVC data
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: dvc pull --force
+
+      - name: Verify DVC data exists
+        run: ls -R ./data
 
       # - name: Generate dummy inference input
       #   run: |
@@ -87,9 +89,9 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         run: |
           docker build \
-            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --build-arg AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
+            --build AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --build AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
             --pull \
             -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest .
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:latest
@@ -118,7 +120,6 @@ jobs:
         run: |
           docker rm -f myapp || true
           docker run -d --name myapp \
-            -w /app \
             -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" \
