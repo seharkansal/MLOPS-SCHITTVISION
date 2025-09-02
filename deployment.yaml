@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubernetes-test
+  name: flask-metrics-app
 spec:
   replicas: 1 # Number of pods
   selector:
     matchLabels:
-      app: kubernetes-test
+      app: flask-metrics-app
   template:
     metadata:
       labels:
-        app: kubernetes-test
+        app: flask-metrics-app
     spec:
       containers:
-      - name: kubernetes-test
-        image: kubernetes-test:latest
+      - name: flask-metrics-app
+        image: flask-metrics-app:latest
         imagePullPolicy: Never  # Tell Kubernetes not to pull from a registry
         # image: vikash95/kubernetes-test-app:latest
         env:
@@ -34,11 +34,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubernetes-test
+  name: flask-metrics-app
 spec:
   type: LoadBalancer       # <-- add this
   selector:
-    app: kubernetes-test
+    app: flask-metrics-app
   ports:
     - port: 8080
       targetPort: 5001
